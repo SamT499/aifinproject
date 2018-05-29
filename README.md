@@ -45,3 +45,6 @@ One-stop home page with everything you'd need (and a chatbot)
 
 Chatbot conversations are single input/response only, meaning that the AI cannot hold a multiple line conversation.
 Q/A bot
+
+
+**PLEASE READ WIKI**
