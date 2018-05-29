@@ -1,6 +1,13 @@
 # aifinproject
 
+## about
+- glitch.com hosts both code and site
 
+- script calls AI API to specific bot with my specific user key
+
+- API takes input and produces a response (AJAX post request)
+
+- Response is sent back to the website (as JSON data) 
 
 
 ### Requirements
@@ -15,23 +22,19 @@
     
 - at least 1 data table 
 
-- top down design
-    - global variables (9) ✓
-    - events ✓
-    - functions (a lot) ✓
+- top down design ✓
+    - global variables 
+    - events 
+    - functions
 
 
 
 
 ### Goals
 
-- Dates
-
 - Small Talk ✓
 
 - Weather (by Location, time, etc) 
-
-- Jokes
 
 - Google Search ✓
 
