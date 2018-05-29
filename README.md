@@ -25,12 +25,17 @@
 
 # Goals
 
-Dates
-Small Talk ✓
-Weather (by Location, time, etc) 
-Jokes
-Google Search ✓
-Music ✓
+- Dates
+
+- Small Talk ✓
+
+- Weather (by Location, time, etc) 
+
+- Jokes
+
+- Google Search ✓
+
+- Music ✓
 
 
 One-stop home page with everything you'd need (and a chatbot)
