@@ -3,7 +3,7 @@
 
 
 
-## Requirements
+### Requirements
 
 - at least 1 loop (for, while) ✓
 
@@ -23,7 +23,7 @@
 
 
 
-## Goals
+### Goals
 
 - Dates
 
