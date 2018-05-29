@@ -1,0 +1,473 @@
+<!-- 
+
+Goals
+
+Dates
+Small Talk ✓
+Weather (by Location, time, etc) 
+Jokes
+Google Search ✓
+Music ✓
+
+
+One-stop home page with everything you'd need (and a chatbot)]
+Chatbot conversations are single input/response only, meaning that the AI cannot hold a multiple line conversation.
+Q/A bot
+
+-->
+
+
+
+<!DOCTYPE = HTML>
+
+<html>
+<head>
+  
+  <title>finAL Project</title>
+  <link rel="shortcut icon" href="https://cdn.glitch.com/d40b3bec-8845-47fb-a24f-4430ea1029f0%2Fandroid-chrome-192x192.png?1526405603178"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    
+    
+    
+    // all the variables used throughout the program
+    
+    var accessToken = "791b8351e25a433c8b849e8c1ae6fab8",
+      baseUrl = "https://api.api.ai/v1/",
+      $speechInput,
+      $recBtn,
+      recognition,
+      messageRecording = "Recording...",
+      messageCouldntHear = "I couldn't hear you, could you say that again?",
+      messageInternalError = "Oh no, there has been an internal server error.",
+      messageSorry = "I'm sorry, I don't have the answer to that yet, but I will soon.";
+    
+    
+    
+    // functions 
+    
+    $(document).ready(function() {
+      $speechInput = $("#speech");
+      $recBtn = $("#rec");
+      
+      
+      
+      // checks if enter/return key is pressed, and if yes, runs send(); function
+      
+      $speechInput.keypress(function(event) {
+        if (event.which == 13) {
+          event.preventDefault();
+          send();
+          
+        }
+      });
+      
+      
+      
+      // runs switchRecognition(); function if voice button is pressed, which records users voice 
+      // (using Google speech-to-text)
+      // and inputs into the text box 
+      
+      $recBtn.on("click", function(event) {
+        switchRecognition();
+      });
+      
+      
+      
+      // toggles JSON data log on bottom right for debugging purposes
+      
+      $(".debug__btn").on("click", function() {
+        $(this).next().toggleClass("is-active");
+        return false;
+      });
+    });
+    
+    
+    
+    // begins recording voice and speech-to-text
+    
+    function startRecognition() {
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+          recognition.interimResults = false;
+      recognition.onstart = function(event) {
+        respond(messageRecording);
+        updateRec();
+      };
+      recognition.onresult = function(event) {
+        recognition.onend = null;
+        
+        
+    // LOOP
+        var text = "";
+          for (var i = event.resultIndex; i < event.results.length; ++i) {
+            text += event.results[i][0].transcript;
+          }
+          setInput(text);
+        stopRecognition();
+      };
+      recognition.onend = function() {
+        respond(messageCouldntHear);
+        stopRecognition();
+      };
+      recognition.lang = "en-US";
+      recognition.start();
+    }
+  
+    
+    // stops voice recognizition 
+    // CONDITIONAL
+    function stopRecognition() {
+      if (recognition) {
+        recognition.stop();
+        recognition = null;
+      }
+      updateRec();
+    }
+    
+    
+    function switchRecognition() {
+      if (recognition) {
+        stopRecognition();
+      } else {
+        startRecognition();
+      }
+    }
+    
+    
+    
+    // sets text in input to what voice recognizition heard, runs send function
+    function setInput(text) {
+      $speechInput.val(text);
+      send();
+    }
+    
+    
+    function updateRec() {
+      $recBtn.text(recognition ? "Stop" : "Speak");
+    }
+    
+    
+    
+    // sends text to Dialogflow API via ajax post request
+    function send() {
+      var text = $speechInput.val();
+      
+      $.ajax({
+        type: "POST",
+        url: baseUrl + "query",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        headers: {
+          "Authorization": "Bearer " + accessToken
+        },
+        
+        data: JSON.stringify({query: text, lang: "en", sessionId: "test"}),
+        success: function(data) {
+          prepareResponse(data);
+        },
+        
+        error: function() {
+          respond(messageInternalError);
+        }
+        
+      });
+    }
+    
+    
+    // takes JSON data and prepares response
+    function prepareResponse(val) {
+      var debugJSON = JSON.stringify(val, undefined, 2),
+          spokenResponse = val.result.speech;
+      respond(spokenResponse);
+      debugRespond(debugJSON);
+    }
+    
+    function debugRespond(val) {
+      $("#response").text(val);
+    }
+    
+    function respond(val) {
+      if (val == "") {
+        val = messageSorry;
+      }
+      
+      if (val !== messageRecording) {
+        var msg = new SpeechSynthesisUtterance();
+        msg.voiceURI = "native";
+        msg.text = val;
+        msg.lang = "en-US";
+        window.speechSynthesis.speak(msg);
+      }
+      
+      $("#spokenResponse").addClass("is-active").find(".spoken-response__text").html(val);
+    }
+        
+  </script>
+  
+  
+  
+  <style type="text/css">
+    
+
+    body {
+      background-image:url("https://cdn.glitch.com/d40b3bec-8845-47fb-a24f-4430ea1029f0%2Fwireballblack.png?1526578549636");
+      width: 100%;
+      height: 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    } 
+
+    
+    html {
+      box-sizing: border-box;
+      height: 100%;
+      margin: 0;
+    }
+    
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+    
+    body {
+      background-color: #000000;
+      font-family: "Dosis", Arial, sans-serif;
+      font-size: 20px;
+      margin: 0;
+      height: 100%;
+      margin: 0;
+    }
+    
+    
+    .container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+    }
+    
+    
+    input { 
+      background-color: #939393;
+      border: 2px solid #ffffff;
+      color: #ffffff;
+      font-family: "Dosis";
+      font-size: 20px;
+      line-height: 43px;
+      padding: 0 0.75em;
+      width: 400px;
+      -webkit-transition: all 0.35s ease-in;
+    }
+    
+    
+    textarea {
+      background-color: #939393;
+      border: 2px solid #ffffff;
+      color: #606B88;
+      padding: 0.5em;
+      width: 100%;
+      -webkit-transition: all 0.35s ease-in;
+    }
+    
+    
+    input:active, input:focus, textarea:active, textarea:focus {
+      outline: 2px solid #48788B;
+    }
+    
+    
+    .btn {
+      background-color: #939393;
+      border: 1px solid #ffffff;
+      color: #ffffff;
+      cursor: pointer;
+      display: inline-block;
+      font-family: "Dosis";
+      font-size: 20px;
+      line-height: 45px;
+      padding: 0 0.75em;
+      text-align: center;
+      text-transform: uppercase;
+      -webkit-transition: all 0.35s ease-in;
+    }
+    
+    .btn:hover {
+      background-color: #B82128;
+      color: #183035;
+    }
+    
+    .debug {
+      bottom: 0;
+      position: fixed;
+      right: 0;
+    }
+    
+    .debug__content {
+      font-size: 14px;
+      max-height: 0;
+      overflow: hidden;
+      -webkit-transition: all 0.35s ease-in;
+    }
+    
+    .debug__content.is-active {
+      display: block;
+      max-height: 500px;
+    }
+    
+    .debug__btn {
+      width: 100%;
+      cursor: help;
+    }
+    
+    .spoken-response {
+      max-height: 0;
+      overflow: hidden;
+      -webkit-transition: all 0.35s ease-in;
+    }
+    
+    .spoken-response.is-active {
+      max-height: 400px;
+    }
+    
+    .spoken-response__text {
+      background-color: #040E23;
+      color: #7584A2;
+      padding: 1em;
+    }
+   
+    .search {
+      bottom: 0;
+      position: fixed;
+      left: 10;
+    }
+    
+    
+    .clock {
+      top: 5;
+      position: fixed;
+      left: 5;
+    }
+    
+    
+    .spotify {
+      top: 85;
+      position: fixed;
+      left: 5;
+    }
+    
+    
+   .share {
+      right: 0;
+      position: fixed;
+      top: 0;
+    }
+    
+    
+    .powr-hit-counter {
+      position: fixed;
+      top: 0;
+      right: 0;
+    }
+    
+  
+  </style>
+</head>
+ 
+  
+
+<body>
+ 
+<script type="text/javascript" src="//w.24timezones.com/l.js" async></script>
+    
+    <iframe class = "clock"
+            scrolling="no" 
+            frameborder="no" 
+            clocktype="html5" 
+            style="overflow:hidden;border:0;margin:0;padding:0;width:300px;height:75px;" 
+            src="https://www.clocklink.com/html5embed.php?clock=038&timezone=PST&color=black&size=300&Title=&Message=&Target=&From=2018,1,1,0,0,0&Color=black"> 
+    </iframe>
+      
+  <br>
+
+    <iframe class= "spotify"
+            src="https://open.spotify.com/embed?uri=spotify:album:05qiaa6qhjXouu6M2sPYUn" 
+            width="300" 
+            height="80" 
+            frameborder="0" 
+            allowtransparency="true" 
+            allow="encrypted-media">
+    </iframe>
+
+   
+    
+    
+    <form id="search" 
+          class = "search" 
+          action="https://www.google.com/search" 
+          method="get" 
+          newwindow="true">
+      
+      <div style="border:1px solid black;padding:1px;width:20em;"> 
+          
+        <table border="15" cellpadding="0"> 
+          <tr><td> 
+            <input type="text" name="q" size="25" maxlength="255" value="" /> 
+            <input type="submit" value="Google Search" />
+            </td>
+          </tr> 
+          <tr>
+            <td align="center" 
+                style="font-size:50%"> 
+            </td>
+          </tr>
+        </table> 
+        
+      </div>
+    </form>
+
+
+
+
+    <div class="container">
+      <input id="speech" type="text">
+      <button id="rec" class="btn">Speak</button>
+
+      <div id="spokenResponse" class="spoken-response">
+        <div class="spoken-response__text"></div> 
+      </div>
+
+    </div>
+
+
+
+    <div class="debug">
+      <div class="debug__btn btn">
+          Debug JSON results
+      </div>
+
+      
+      <div class="debug__content">
+        <textarea 
+              id="response" 
+              cols="50" 
+              rows="20">
+        </textarea>
+      </div>
+      
+     </div>
+
+    
+    
+  <link href="https://fonts.googleapis.com/css?family=Dosis:500" 
+        rel="stylesheet">
+
+
+    
+  <script src="//www.powr.io/powr.js?external-type=html"></script> 
+  <div class="powr-hit-counter" 
+       id="1bab047d_1526578727">
+  </div>
+    
+  </body>
+</html>
