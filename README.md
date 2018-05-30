@@ -12,17 +12,17 @@
 
 ### Requirements
 
-- at least 1 loop (for, while) ✓
+- at least 1 loop (for, while) 
 
-- at least 1 conditional (if, else if, etc) ✓
+- at least 1 conditional (if, else if, etc) 
 
-- 3+ functions ✓
+- 3+ functions 
     - 1+ with parameter
     - 1+ without
     
 - at least 1 data table 
 
-- top down design ✓
+- top down design 
     - global variables 
     - events 
     - functions
@@ -32,13 +32,13 @@
 
 ### Goals
 
-- Small Talk ✓
+- Small Talk 
 
 - Weather (by Location, time, etc) 
 
-- Google Search ✓
+- Google Search 
 
-- Music ✓
+- Music 
 
 
 One-stop home page with everything you'd need (and a chatbot)
